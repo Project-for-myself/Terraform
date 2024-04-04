@@ -7,5 +7,6 @@ terraform {
     bucket = "devops.terraform.backend.state"
     key    = "networking.tf"
     region = "eu-central-1"
+    dynamodb_table = "terraform-lock"
   }
 }
