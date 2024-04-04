@@ -35,6 +35,15 @@ resource "aws_security_group_rule" "allow_ssh_ipv4" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "allow_jenkins" {
+  security_group_id = aws_security_group.allow_ports.id
+  type              = "ingress"
+  from_port         = 8080
+  protocol          = "tcp"
+  to_port           = 8080
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "allow_tls_and_ssh_ipv6" {
   security_group_id = aws_security_group.allow_ports.id
   type              = "ingress"
