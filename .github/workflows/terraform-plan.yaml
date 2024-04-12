@@ -1,10 +1,10 @@
 name: Terraform Plan
 
 on: 
+  pull_request:
   push:
     branches:
-      - main
-  pull_request:
+      - "dev"
 
 env:
   tf_version: "1.8.0"
@@ -91,7 +91,7 @@ jobs:
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`hcl
-            ${{ steps.init.outputs.tg_action_output }}
+            ${{ steps.plan.output.tg_action_output }}
             \`\`\`
             </details>
             **Pusher**: @${{ github.actor }}
