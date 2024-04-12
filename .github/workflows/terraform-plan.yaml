@@ -97,9 +97,13 @@ jobs:
             **Pusher**: @${{ github.actor }}
             **Action**: ${{ github.event_name }}
             `;
-            github.issues.createComment({
-              issue_number: context.payload.pull_request.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+            if (context.payload.pull_request) {
+              github.issues.createComment({
+                issue_number: context.payload.pull_request.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              });
+            } else {
+              console.log('Not a pull request event. Skipping comment creation.');
+            }
