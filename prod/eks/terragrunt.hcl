@@ -1,5 +1,5 @@
 terraform {
-    source = "../../modules/eks"
+  source = "../../modules/eks"
 }
 
 include "root" {
@@ -8,9 +8,9 @@ include "root" {
 
 inputs = {
   eks_version = "1.29"
-  eks_name = "kubernetes"
+  eks_name    = "kubernetes"
   subnet_ids  = dependency.network.outputs.private_subnet_ids
-  env = "prod"
+  env         = "prod"
 
   node_groups = {
     general = {
@@ -23,7 +23,7 @@ inputs = {
       }
     }
   }
-  enable_irsa   = true
+  enable_irsa = true
 }
 
 dependency "network" {
