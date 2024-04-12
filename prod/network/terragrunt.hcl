@@ -1,5 +1,5 @@
 terraform {
-    source = "../../modules/network"
+  source = "../../modules/network"
 }
 
 include "root" {
@@ -21,7 +21,7 @@ inputs = {
     "kubernetes.io/role/elb"     = 1
     "kubernetes.io/cluster/prod" = "owned"
   }
-  
+
   security_group_inbound_rules  = ["22", "443"]
   security_group_outbound_rules = ["0"]
 }
