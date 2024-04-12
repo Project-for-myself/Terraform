@@ -79,6 +79,12 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'run-all plan'
+      
+      - name: Decode Terraform Plan
+        id: decode-plan
+        run: |
+          decoded_output=$(echo "${{ steps.plan.outputs.tg_action_output }}" | sed 's/%0A/\n/g' | sed 's/%3C=/<=/g')
+          echo "::set-output name=decoded_output::${decoded_output}"
 
       - name: Update PR
         uses: actions/github-script@v3
@@ -91,7 +97,7 @@ jobs:
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`hcl
-             ${decodeURIComponent(steps.plan.outputs.tg_action_output)}
+            ${{ steps.decode-plan.outputs.decoded_output }}
             \`\`\`
             </details>
             **Pusher**: @${{ github.actor }}
