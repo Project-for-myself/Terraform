@@ -60,3 +60,54 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'run-all validate'
+      
+      - name: AWS creds
+        shell: bash
+        run: |
+          # This will copy our creds to the workspace, which, GitHub will mount to the action's container
+          cp -r ~/.aws 
+      
+      - name: Plan
+        uses: gruntwork-io/terragrunt-action@v2
+        env:
+          # /github/workspace is path in container, aka /home/runner/workspace.. in GHA Runner
+          AWS_SHARED_CREDENTIALS_FILE: /github/workspace/.aws/credentials
+        id: plan
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: ${{ env.working_dir }}
+          tg_command: 'run-all plan'
+
+      - name: Update PR
+        uses: actions/github-script@v6
+        id: plan-comment
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            <details><summary>Show Plan</summary>
+            \`\`\`hcl
+            ${process.env.PLAN}
+            \`\`\`
+            </details>
+            **Pusher**: @${{ github.actor }}
+            **Action**: ${{ github.event_name }}
+            `;
+            // Delete previous comment so PR timeline makes sense
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+              });
+            }
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
