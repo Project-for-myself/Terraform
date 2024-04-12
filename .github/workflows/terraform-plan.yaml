@@ -83,8 +83,6 @@ jobs:
       - name: Update PR
         uses: actions/github-script@v3
         id: plan-comment
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -93,7 +91,7 @@ jobs:
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
             \`\`\`hcl
-            ${process.env.PLAN}
+            ${{ steps.init.outputs.tg_action_output }}
             \`\`\`
             </details>
             **Pusher**: @${{ github.actor }}
