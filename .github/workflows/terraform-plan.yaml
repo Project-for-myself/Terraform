@@ -85,8 +85,8 @@ jobs:
       - name: Decode Terraform Plan
         id: decode-plan
         run: |
-          decoded_output=$(echo "${{ steps.plan.outputs.tg_action_output }}" | sed 's/%0A/\\n/g' | sed 's/%3C=/<=/g')
-          echo "::set-output name=decoded_output::${decoded_output}"
+          decoded_output=$(echo "${{ steps.plan.outputs.tg_action_output }}" | sed 's/%0A/\n/g' | sed 's/%3C=/<=/g')
+    #      output=$(echo "::set-output name=decoded_output::${decoded_output}")
 
       - name: Update PR
         uses: actions/github-script@v3
