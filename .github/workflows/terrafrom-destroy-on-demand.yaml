@@ -68,7 +68,7 @@ jobs:
         id: decode
         # output from terragrunt docker container is unreadable
         run: |  
-          decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\n/g' | sed 's/%3C=/<=/g')
+          decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\\n/g; s/%3C=/<=/g')
           echo "decoded_output=${decoded_output}" >> $GITHUB_OUTPUT
           
       
