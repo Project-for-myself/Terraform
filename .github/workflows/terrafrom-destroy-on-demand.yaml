@@ -1,6 +1,9 @@
 name: Terraform 
 
-on: 
+on:
+  push:
+    branches:
+      - "dev"
   workflow_dispatch:
     branches: "dev"
 
