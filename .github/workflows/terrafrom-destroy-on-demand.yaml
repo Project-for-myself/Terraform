@@ -1,9 +1,9 @@
 name: Terraform 
 
 on:
-  push:
-    branches:
-      - "dev"
+  #push:
+  #  branches:
+  #    - "dev"
   workflow_dispatch:
     branches: "dev"
 
@@ -63,13 +63,6 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'run-all destroy'
-
-#      - name: Decode Terraform output
-#        id: decode
-#        # output from terragrunt docker container is unreadable
-#        run: |  
-#          decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\\n/g; s/%3C=/<=/g')
-#          echo "decoded_output=${decoded_output}" >> $GITHUB_OUTPUT
 
       - name: Output Cleaning
         id: clean

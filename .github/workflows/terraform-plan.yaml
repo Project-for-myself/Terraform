@@ -100,7 +100,7 @@ jobs:
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             <details><summary>Show Plan</summary>
-            \`\`\`hcl
+            \`\`\`n
             ${{ env.TG_PLAN_OUTPUT }}
             \`\`\`
             </details>
@@ -124,6 +124,7 @@ jobs:
         uses: Ilshidur/action-discord@master
         with:
           args: |
-            \`\`\`\n
-            ${{ env.TG_PLAN_OUTPUT }}
-            \`\`\`
+            ### *${{ github.workflow }}* Action ([Run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})) Summary 🚀
+            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
