@@ -63,6 +63,12 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'run-all destroy'
+
+      - name: Decode Terraform output
+        id: decode
+        run: |
+          decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\\n/g' | sed 's/%3C=/<=/g')
+          echo "::set-output name=decoded_output::${decoded_output}"
       
       - name: Discord notification
         env:
@@ -70,4 +76,4 @@ jobs:
         uses: Ilshidur/action-discord@master
         with:
           args: |
-            ${{ steps.destroy.outputs.tg_action_output | trim }}
+            ${{ steps.decode.outputs.decoded_output }}
