@@ -2,8 +2,8 @@ name: Terraform
 
 on:
   push:
-#    branches:
-#      - "dev"
+    branches:
+      - "dev"
   workflow_dispatch:
     branches: "dev"
 
@@ -68,7 +68,7 @@ jobs:
         id: decode
         run: |
           decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\n/g' | sed 's/%3C=/<=/g')
-          output=$(echo "::set-output name=decoded_output::${decoded_output}")
+          echo "::set-output name=decoded_output::${decoded_output}"
       
       - name: Discord notification
         env:
