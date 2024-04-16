@@ -64,12 +64,20 @@ jobs:
           tg_dir: ${{ env.working_dir }}
           tg_command: 'run-all destroy'
 
-      - name: Decode Terraform output
-        id: decode
-        # output from terragrunt docker container is unreadable
-        run: |  
-          decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\\n/g; s/%3C=/<=/g')
-          echo "decoded_output=${decoded_output}" >> $GITHUB_OUTPUT
+#      - name: Decode Terraform output
+#        id: decode
+#        # output from terragrunt docker container is unreadable
+#        run: |  
+#          decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\\n/g; s/%3C=/<=/g')
+#          echo "decoded_output=${decoded_output}" >> $GITHUB_OUTPUT
+
+      - name: Output Cleaning
+        id: clean
+        run: |
+          TG_OUT=$(echo '${{ steps.destroy.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g')
+          echo "TG_PLAN_OUTPUT<<EOF" >> $GITHUB_ENV
+          echo "${TG_OUT:0:65300}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
           
       
       - name: Discord notification
@@ -78,4 +86,6 @@ jobs:
         uses: Ilshidur/action-discord@master
         with:
           args: |
-            ${{ steps.decode.outputs.decoded_output }}
+            \`\`\`\n
+            ${{ env.TG_PLAN_OUTPUT }}
+            \`\`\`
