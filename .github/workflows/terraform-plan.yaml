@@ -121,4 +121,4 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: '{{ steps.plan.outputs.tg_action_output }}'
+          args: '${{ steps.plan.outputs.tg_action_output }}'
