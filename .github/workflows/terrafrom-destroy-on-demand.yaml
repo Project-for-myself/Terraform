@@ -1,11 +1,8 @@
-name: Terraform 
+name: Terraform Destroy
 
 on:
-  #push:
-  #  branches:
-  #    - "dev"
   workflow_dispatch:
-    branches: "dev"
+    branches: "main"
 
 env:
   tf_version: "1.8.0"
@@ -79,6 +76,6 @@ jobs:
         uses: Ilshidur/action-discord@master
         with:
           args: |
-            \`\`\`\n
-            ${{ env.TG_PLAN_OUTPUT }}
-            \`\`\`
+            ### *${{ github.workflow }}* Action ([Run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})) Summary 🚀
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Destroing ⚙️\`${{ steps.destroy.outcome }}\`
