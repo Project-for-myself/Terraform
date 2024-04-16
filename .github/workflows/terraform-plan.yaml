@@ -1,10 +1,12 @@
 name: Terraform Plan
 
 on: 
-  pull_request:
-  push:
-    branches:
-      - "dev"
+#  pull_request:
+#  push:
+#    branches:
+#      - "dev"
+  workflow_dispatch:
+    branches: "dev"
 
 env:
   tf_version: "1.8.0"
@@ -113,3 +115,10 @@ jobs:
             } else {
               console.log('Not a pull request event. Skipping comment creation.');
             }
+        
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '{{ steps.plan.outputs.tg_action_output }}'
