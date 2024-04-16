@@ -1,9 +1,8 @@
-name: Terraform Plan
+name: Terraform Destroy
 
-on: 
-  pull_request:
+on:
   workflow_dispatch:
-    branches: "dev"
+    branches: "main"
 
 env:
   tf_version: "1.8.0"
@@ -12,7 +11,7 @@ env:
 
 jobs:
   terragrunt-terraform:
-    name: Plan
+    name: Destroy
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,14 +33,6 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region eu-central-1
           aws configure set default.output json
-
-      - name: Check terragrunt HCL
-        uses: gruntwork-io/terragrunt-action@v2
-        with:
-          tf_version: ${{ env.tf_version }}
-          tg_version: ${{ env.tg_version }}
-          tg_dir: ${{ env.working_dir }}
-          tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
       
       - name: Init
         uses: gruntwork-io/terragrunt-action@v2
@@ -52,69 +43,33 @@ jobs:
           tg_dir: ${{ env.working_dir }}
           tg_command: 'run-all init -upgrade'
       
-      - name: Validate
-        uses: gruntwork-io/terragrunt-action@v2
-        id: validate
-        with:
-          tf_version: ${{ env.tf_version }}
-          tg_version: ${{ env.tg_version }}
-          tg_dir: ${{ env.working_dir }}
-          tg_command: 'run-all validate'
-      
       - name: Moving AWS creds
         shell: bash
         run: |
           # This will copy our creds to the workspace, which, GitHub will mount to the action's container
           cp -r ~/.aws .
       
-      - name: Plan
+      - name: Destroy
         uses: gruntwork-io/terragrunt-action@v2
         env:
           # /github/workspace is path in container, aka /home/runner/workspace.. in GHA Runner
           AWS_SHARED_CREDENTIALS_FILE: /github/workspace/.aws/credentials
-        id: plan
+        id: destroy
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
-          tg_command: 'run-all plan'
-      
+          tg_command: 'run-all destroy'
+
       - name: Output Cleaning
         id: clean
         run: |
-          TG_OUT=$(echo '${{ steps.plan.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g')
+          TG_OUT=$(echo '${{ steps.destroy.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g')
           echo "TG_PLAN_OUTPUT<<EOF" >> $GITHUB_ENV
           echo "${TG_OUT:0:65300}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-      - name: Update PR
-        uses: actions/github-script@v3
-        id: plan-comment
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-            <details><summary>Show Plan</summary>
-            \`\`\`n
-            ${{ env.TG_PLAN_OUTPUT }}
-            \`\`\`
-            </details>
-            **Pusher**: @${{ github.actor }}
-            **Action**: ${{ github.event_name }}
-            `;
-            if (context.payload.pull_request) {
-              github.issues.createComment({
-                issue_number: context.payload.pull_request.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: output
-              });
-            } else {
-              console.log('Not a pull request event. Skipping comment creation.');
-            }
-        
+          
+      
       - name: Discord notification
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -122,6 +77,5 @@ jobs:
         with:
           args: |
             ### *${{ github.workflow }}* Action ([Run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})) Summary 🚀
-            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            #### Terraform Destroing ⚙️\`${{ steps.destroy.outcome }}\`
