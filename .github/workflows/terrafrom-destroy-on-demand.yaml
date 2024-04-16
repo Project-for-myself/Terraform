@@ -69,7 +69,8 @@ jobs:
         # output from terragrunt docker container is unreadable
         run: |  
           decoded_output=$(echo "${{ steps.destroy.outputs.tg_action_output }}" | sed 's/%0A/\n/g' | sed 's/%3C=/<=/g')
-          echo "::set-output name=decoded_output::${decoded_output}"
+          echo "decoded_output=${decoded_output}" >> $GITHUB_OUTPUT
+          
       
       - name: Discord notification
         env:
