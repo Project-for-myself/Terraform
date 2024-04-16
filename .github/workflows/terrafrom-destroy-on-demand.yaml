@@ -78,4 +78,4 @@ jobs:
           args: |
             ### *${{ github.workflow }}* Action ([Run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})) Summary 🚀
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Destroing ⚙️\`${{ steps.destroy.outcome }}\`
+            #### Terraform Destroy ⚙️\`${{ steps.destroy.outcome }}\`
